@@ -52,7 +52,7 @@ app.get('/', async (req,res,next) => {
   const html=fs.readFileSync(path.join(publicDir,'index.html'),'utf8');
   const {rows}=await pool.query("SELECT headline,slug,sport,author,thumbnail_url,excerpt,body,status,published_at,created_at FROM articles WHERE status='published' ORDER BY COALESCE(published_at,created_at) DESC LIMIT 12");
   let out=html;
-  if(rows.length) out=out.replace(/<div class="stories" id="stories">[\s\S]*?<\/div><aside class="side">/, '<div class="stories" id="stories">'+rows.map(renderCard).join('')+'</div><aside class="side">');
+  out=out.replace(/<div class="stories" id="stories">[\s\S]*?<\/div><aside class="side">/, '<div class="stories" id="stories">'+(rows.length ? rows.map(renderCard).join('') : '<div class="empty">No published stories yet. Check back soon.</div>')+'</div><aside class="side">');
   res.type('html').send(out);
  } catch(e){ next(e); }
 });
